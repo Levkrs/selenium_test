@@ -23,36 +23,35 @@ def go_parse(url):
     '''
     r = requests.get(url)
     response = json.loads(r.text)
-    all_football_id = []
-    resautl_gamers = {}
+    football_id = []
+    resault_gamers = {}
+    all_league = []
 
     for sport in response['sports']:
         el = sport
-        if (re.match(r'Футбол', el['name']) != None):
-            all_football_id.append(el['id'])
+        if (re.match(r'Футбол', el['name']) != None and sport['kind'] == 'sport'):
+            football_id.append(el['id'])
 
+    for league in response['sports']:
+        if league.get('parentId'):
+            if football_id.count(league['parentId']) > 0:
+                all_league.append(league['id'])
+
+    print('xx')
     for event in response['events']:
-        if (all_football_id.count(event['sportId']) > 0 and event.get('place') != None):
-            # state = event['state']['willBeLive']
-            if (event['place'] == 'live' and event.get('team1') != None and event.get('team2') != None):
-                gamer1 = re.search(r'([а-яА-ЯA-Za-z0-9_]+)', event['team1'])
-                if (gamer1 != None):
-                    gamer1 = gamer1.group(0)
-                else:
-                    gamer1 = event['team1']
-                gamer2 = re.search(r'([а-яА-ЯA-Za-z0-9_]+)', event['team2'])
-                if (gamer2 != None):
-                    gamer2 = gamer2.group(0)
-                else:
-                    gamer2 = event['team2']
+        if event.get('sportId') != None:
+            parentId = event['sportId']
+            if all_league.count(parentId) > 0 and event['level'] == 1:
+                gamer1 = event['team1']
+                gamer2 = event['team2']
                 game_name = f"{gamer1} - {gamer2}"
                 gamer_object = {
                     do_hash(gamer1): gamer1,
                     do_hash(gamer2): gamer2
                 }
-                resautl_gamers[game_name] = gamer_object
-    return resautl_gamers
+                resault_gamers[game_name] = gamer_object
 
+    return resault_gamers
 
 gamers = go_parse('https://line11.bkfon-resources.com/live/currentLine/ru')
 
