@@ -32,15 +32,15 @@ def go_parse(url):
             all_football_id.append(el['id'])
 
     for event in response['events']:
-        if (all_football_id.count(event['sportId']) > 0 and event.get('state') != None):
-            state = event['state']['willBeLive']
-            if (event['state']['willBeLive'] == True and event.get('team1') != None and event.get('team2') != None):
-                gamer1 = re.search(r'([A-Za-z0-9_]+)', event['team1'])
+        if (all_football_id.count(event['sportId']) > 0 and event.get('place') != None):
+            # state = event['state']['willBeLive']
+            if (event['place'] == 'live' and event.get('team1') != None and event.get('team2') != None):
+                gamer1 = re.search(r'([а-яА-ЯA-Za-z0-9_]+)', event['team1'])
                 if (gamer1 != None):
                     gamer1 = gamer1.group(0)
                 else:
                     gamer1 = event['team1']
-                gamer2 = re.search(r'([A-Za-z0-9_]+)', event['team2'])
+                gamer2 = re.search(r'([а-яА-ЯA-Za-z0-9_]+)', event['team2'])
                 if (gamer2 != None):
                     gamer2 = gamer2.group(0)
                 else:
@@ -91,4 +91,4 @@ def selenium_random_search(name_of_game):
     driver.quit()
 
 
-selenium_random_search(first_name)
+# selenium_random_search(first_name)
